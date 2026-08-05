@@ -1,0 +1,12 @@
+{
+  "widths": [
+    1280,
+    640
+  ],
+  "counts": {
+    "camera": 80,
+    "house": 80,
+    "lamp": 80,
+    "termometer": 80
+  }
+}

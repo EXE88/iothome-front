@@ -1,0 +1,230 @@
+@import "tailwindcss";
+
+/* ---------------------------------------------------------------------------
+   Tokens
+
+   Two surfaces carry the whole page. PAPER is the white the brief pins.
+   STUDIO is the grey seamless sweep the product renders were photographed on,
+   sampled straight out of the frames (edges ~#A2, centre ~#C4, floor ~#D2) so
+   a full-bleed canvas dissolves into its section instead of sitting on it as a
+   visible rectangle.
+--------------------------------------------------------------------------- */
+:root {
+  --paper: #ffffff;
+  --ink: #0a0a0a;
+  --ink-soft: #4b4b4b;
+  --ink-faint: #6f6f6f;
+
+  --studio-core: #c6c6c6;
+  --studio-mid: #b4b4b4;
+  --studio-edge: #a2a2a2;
+  --studio-floor: #d4d4d4;
+
+  --line: color-mix(in srgb, var(--ink) 12%, transparent);
+  --line-strong: color-mix(in srgb, var(--ink) 22%, transparent);
+
+  --glass: color-mix(in srgb, #ffffff 62%, transparent);
+  --glass-line: color-mix(in srgb, #ffffff 70%, transparent);
+
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@theme inline {
+  --color-paper: var(--paper);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-ink-faint: var(--ink-faint);
+  --color-line: var(--line);
+  --font-sans: var(--font-latin), var(--font-persian), sans-serif;
+}
+
+[dir="rtl"] {
+  --font-sans: var(--font-persian), var(--font-latin), sans-serif;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-synthesis-weight: none;
+  overflow-x: clip;
+}
+
+/* Arabic script joins its letters. Latin display tracking pulls those joins
+   apart and reads as broken type, so Persian keeps its natural fit no matter
+   what tracking a utility class asks for. */
+[dir="rtl"] :is(h1, h2, h3, h4, p, a, span, li, dt, dd, button, figcaption) {
+  letter-spacing: 0;
+}
+
+::selection {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+/* Copy sits on the leading edge, so the wash starts there and clears by the
+   middle of the viewport. */
+/* Enough separation for the type to hold, not enough to bleach the render —
+   the frames are the page's only real material, and a wash that turns them
+   milky has protected the copy by destroying the thing it sits on. The copy
+   itself carries most of the load by being near-black rather than grey. */
+.hero-scrim {
+  /* Phones stack copy above the render, so the wash runs down, not across. */
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, #ffffff 72%, transparent) 0%,
+    color-mix(in srgb, #ffffff 44%, transparent) 34%,
+    transparent 62%
+  );
+}
+
+@media (min-width: 640px) {
+  .hero-scrim {
+    --scrim-to: right;
+    background: linear-gradient(
+      to var(--scrim-to),
+      color-mix(in srgb, #ffffff 74%, transparent) 0%,
+      color-mix(in srgb, #ffffff 48%, transparent) 22%,
+      color-mix(in srgb, #ffffff 16%, transparent) 40%,
+      transparent 56%
+    );
+  }
+
+  [dir="rtl"] .hero-scrim {
+    --scrim-to: left;
+  }
+}
+
+:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* ---------------------------------------------------------------------------
+   Studio ground
+--------------------------------------------------------------------------- */
+.studio {
+  background:
+    linear-gradient(
+      to bottom,
+      transparent 74%,
+      color-mix(in srgb, var(--studio-floor) 55%, transparent) 92%,
+      color-mix(in srgb, var(--studio-floor) 70%, transparent) 100%
+    ),
+    radial-gradient(
+      125% 92% at 50% 38%,
+      var(--studio-core) 0%,
+      var(--studio-mid) 52%,
+      var(--studio-edge) 100%
+    );
+}
+
+/* The seam between a canvas and the CSS sweep behind it is never perfect at
+   the pixel level, so the canvas edges are feathered into it. */
+.studio-fade {
+  -webkit-mask-image: radial-gradient(
+    115% 100% at 50% 50%,
+    #000 62%,
+    transparent 100%
+  );
+  mask-image: radial-gradient(115% 100% at 50% 50%, #000 62%, transparent 100%);
+}
+
+/* ---------------------------------------------------------------------------
+   Motion
+--------------------------------------------------------------------------- */
+.reveal {
+  opacity: 0;
+  transform: translate3d(0, 1.75rem, 0);
+  filter: blur(6px);
+}
+
+.reveal-in {
+  opacity: 1;
+  transform: none;
+  filter: blur(0);
+  transition:
+    opacity 0.9s var(--ease-out),
+    transform 0.9s var(--ease-out),
+    filter 0.9s var(--ease-out);
+}
+
+/* A scroll-scrubbed page has no meaning without scrolling, so reduced motion
+   gets the finished object and static, fully visible copy instead. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .reveal {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+}
+
+/* SVG path coordinates are physical, so the strands would still leave the
+   right edge in Persian while the house they come from sits on the left. The
+   three landing points are symmetrical about the centre, so mirroring the
+   whole drawing puts the origin back on the house and leaves the endpoints on
+   their panels. */
+[dir="rtl"] .strands {
+  transform: scaleX(-1);
+}
+
+/* Over the near-black closing section the bar flips its whole token set, so
+   links, wordmark and both buttons keep their contrast instead of only the
+   background changing. */
+nav[data-on-dark] a,
+nav[data-on-dark] button {
+  color: var(--paper);
+}
+
+nav[data-on-dark] a[data-cta] {
+  background: var(--paper);
+  color: var(--ink);
+}
+
+nav[data-on-dark] a:hover {
+  background: color-mix(in srgb, #ffffff 14%, transparent);
+}
+
+nav[data-on-dark] a[data-cta]:hover {
+  background: color-mix(in srgb, #ffffff 88%, transparent);
+}
+
+/* The scroll cue drifts rather than bounces: a bounce reads as a rubber ball,
+   and nothing on this page is elastic. */
+@keyframes cue-drift {
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.55;
+  }
+  50% {
+    transform: translateY(0.32rem);
+    opacity: 1;
+  }
+}
+
+.cue-drift {
+  animation: cue-drift 2.6s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+}
+
+/* Hide the horizontal rail's scrollbar without taking away the scrolling. */
+.rail {
+  scrollbar-width: none;
+}
+.rail::-webkit-scrollbar {
+  display: none;
+}
