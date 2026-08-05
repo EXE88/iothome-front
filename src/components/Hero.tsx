@@ -22,6 +22,7 @@ export default function Hero({ dict, locale }: Props) {
   const sectionRef = useRef<HTMLDivElement>(null);
   const copyRef = useRef<HTMLDivElement>(null);
   const scrimRef = useRef<HTMLDivElement>(null);
+  const strandRef = useRef<SVGSVGElement>(null);
   const cueRef = useRef<HTMLDivElement>(null);
   const [narrow, setNarrow] = useState(false);
 
@@ -103,6 +104,23 @@ export default function Hero({ dict, locale }: Props) {
           scrub: true,
         },
       });
+
+      // The strand only exists once there is a finished house to leave.
+      const strand = strandRef.current?.querySelector("path");
+      if (strand) {
+        const length = strand.getTotalLength();
+        gsap.set(strand, { strokeDasharray: length, strokeDashoffset: length });
+        gsap.to(strand, {
+          strokeDashoffset: 0,
+          ease: "none",
+          scrollTrigger: {
+            trigger: section,
+            start: "82% top",
+            end: "bottom bottom",
+            scrub: true,
+          },
+        });
+      }
     }, section);
 
     return () => ctx.revert();
@@ -170,6 +188,27 @@ export default function Hero({ dict, locale }: Props) {
             </div>
           </div>
         </div>
+
+        {/* Once the house is finished, a single strand drops out of its base
+            and runs off the bottom of the viewport. The devices section picks
+            that same line up at its top edge and forks it into three, so the
+            connection belongs to the house the visitor just watched being
+            built rather than to a second copy of it further down. */}
+        <svg
+          ref={strandRef}
+          className="pointer-events-none absolute inset-x-0 bottom-0 z-[6] h-[28vh] w-full"
+          viewBox="0 0 100 100"
+          preserveAspectRatio="none"
+          aria-hidden="true"
+        >
+          <path
+            d="M50 0 V100"
+            fill="none"
+            stroke="var(--line-strong)"
+            strokeWidth="1.25"
+            vectorEffect="non-scaling-stroke"
+          />
+        </svg>
 
         <div
           ref={cueRef}

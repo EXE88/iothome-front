@@ -32,7 +32,7 @@ export default function Footer({
               <h2 className="text-[0.82rem] font-semibold uppercase tracking-[0.14em] text-ink-faint">
                 {dict.footer.product}
               </h2>
-              <ul className="mt-4 flex flex-col gap-2.5 text-[0.94rem]">
+              <ul className="mt-4 flex flex-col gap-2.5 text-[0.92rem]">
                 <li>
                   <a href="#devices" className="text-ink-soft transition-colors hover:text-ink">
                     {dict.nav.products}
@@ -50,7 +50,7 @@ export default function Footer({
               <h2 className="text-[0.82rem] font-semibold uppercase tracking-[0.14em] text-ink-faint">
                 {dict.footer.account}
               </h2>
-              <ul className="mt-4 flex flex-col gap-2.5 text-[0.94rem]">
+              <ul className="mt-4 flex flex-col gap-2.5 text-[0.92rem]">
                 <li>
                   <a
                     href={`/${locale}/login`}
@@ -74,7 +74,7 @@ export default function Footer({
               <h2 className="text-[0.82rem] font-semibold uppercase tracking-[0.14em] text-ink-faint">
                 {dict.footer.language}
               </h2>
-              <ul className="mt-4 flex flex-col gap-2.5 text-[0.94rem]">
+              <ul className="mt-4 flex flex-col gap-2.5 text-[0.92rem]">
                 <li>
                   <span className="text-ink">{locale === "fa" ? "فارسی" : "English"}</span>
                 </li>

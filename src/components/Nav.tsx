@@ -99,14 +99,14 @@ export default function Nav({
           </a>
           <a
             href={`/${locale}/login`}
-            className="rounded-full px-4 py-2 text-[0.9rem] font-medium text-ink transition-colors duration-200 hover:bg-[color-mix(in_srgb,var(--ink)_7%,transparent)]"
+            className="rounded-full px-4 py-2 text-[0.92rem] font-medium text-ink transition-colors duration-200 hover:bg-[color-mix(in_srgb,var(--ink)_7%,transparent)]"
           >
             {dict.nav.login}
           </a>
           <a
             href={`/${locale}/signup`}
             data-cta
-            className="rounded-full bg-ink px-5 py-2 text-[0.9rem] font-medium text-paper transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5"
+            className="rounded-full bg-ink px-5 py-2 text-[0.92rem] font-medium text-paper transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5"
           >
             {dict.nav.signup}
           </a>

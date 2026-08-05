@@ -68,13 +68,13 @@ function DevicePanel({
         />
       </div>
       <figcaption className="mt-5">
-        <h3 className="text-[1.3rem] font-semibold tracking-[-0.02em]">
+        <h3 className="text-[1.25rem] font-semibold tracking-[-0.02em]">
           {copy.name}
         </h3>
         <p className="mt-2 text-[0.96rem] leading-relaxed text-ink-soft">
           {copy.line}
         </p>
-        <p className="mt-1.5 text-[0.9rem] leading-relaxed text-ink-faint">
+        <p className="mt-1.5 text-[0.92rem] leading-relaxed text-ink-faint">
           {copy.detail}
         </p>
       </figcaption>
@@ -187,11 +187,12 @@ export default function DeviceTrio({ dict }: { dict: Dictionary }) {
     >
       <div className="flex flex-col justify-center overflow-hidden py-20 sm:sticky sm:top-0 sm:h-screen sm:py-0">
         <div className="mx-auto w-full max-w-6xl px-6 sm:px-10 sm:pt-20">
-          {/* The finished house is carried across the section boundary and
-              held here. Without it the strands fan out of blank paper and the
-              split has nothing to split from. */}
-          <div className="flex items-end justify-between gap-6">
-            <div className="max-w-md">
+          {/* The strand the hero dropped out of the finished house arrives at
+              this edge and forks into three. There is no second copy of the
+              house here: the visitor built the real one a screen ago, and the
+              line is what carries it forward. */}
+          <div className="relative sm:h-[26vh] sm:min-h-[11rem]">
+            <div className="max-w-md sm:absolute sm:inset-y-0 sm:start-0 sm:flex sm:flex-col sm:justify-center">
               <h2
                 id="devices-title"
                 className="text-balance text-[clamp(1.9rem,3.4vw,2.7rem)] font-semibold leading-[1.05] tracking-[-0.035em]"
@@ -203,66 +204,50 @@ export default function DeviceTrio({ dict }: { dict: Dictionary }) {
               </p>
             </div>
 
-            {/* Given the same studio panel as the three devices below it: the
-                render carries its own grey backdrop, which on white paper
-                would otherwise read as a smudge rather than as the parent of
-                the three panels the strands run to. */}
-            <div className="relative hidden aspect-4/3 w-[15rem] shrink-0 overflow-hidden rounded-2xl studio sm:block lg:w-[18rem]">
-              <img
-                src="/seq/house/640/001.webp"
-                alt=""
-                aria-hidden="true"
-                className="h-full w-full select-none object-cover studio-fade"
+            <svg
+              ref={linesRef}
+              className="absolute inset-0 hidden h-full w-full sm:block"
+              viewBox="0 0 1200 260"
+              preserveAspectRatio="none"
+              aria-hidden="true"
+            >
+              {/* One line in, three out, symmetric about the centre. */}
+              <path
+                d="M600 0 V116"
+                fill="none"
+                stroke="var(--line-strong)"
+                strokeWidth="1.25"
+                vectorEffect="non-scaling-stroke"
               />
-            </div>
+              <path
+                d="M600 116 C600 200 197 176 197 260"
+                fill="none"
+                stroke="var(--line-strong)"
+                strokeWidth="1.25"
+                vectorEffect="non-scaling-stroke"
+              />
+              <path
+                d="M600 116 V260"
+                fill="none"
+                stroke="var(--line-strong)"
+                strokeWidth="1.25"
+                vectorEffect="non-scaling-stroke"
+              />
+              <path
+                d="M600 116 C600 200 1003 176 1003 260"
+                fill="none"
+                stroke="var(--line-strong)"
+                strokeWidth="1.25"
+                vectorEffect="non-scaling-stroke"
+              />
+            </svg>
           </div>
 
-          {/* The three strands leaving that house, inside the same content
-              column as the grid so each one lands on the panel it belongs to. */}
-          <svg
-            ref={linesRef}
-            className="strands mt-2 hidden h-16 w-full sm:block"
-            viewBox="0 0 1200 64"
-            preserveAspectRatio="none"
-            aria-hidden="true"
-          >
-            <path
-              d="M1055 0 C1055 40 197 20 197 64"
-              fill="none"
-              stroke="var(--line-strong)"
-              strokeWidth="1.25"
-              vectorEffect="non-scaling-stroke"
-            />
-            <path
-              d="M1055 0 C1055 40 600 20 600 64"
-              fill="none"
-              stroke="var(--line-strong)"
-              strokeWidth="1.25"
-              vectorEffect="non-scaling-stroke"
-            />
-            <path
-              d="M1055 0 C1055 30 1003 30 1003 64"
-              fill="none"
-              stroke="var(--line-strong)"
-              strokeWidth="1.25"
-              vectorEffect="non-scaling-stroke"
-            />
-          </svg>
-
-          {/* The phone cannot hold the house and three panels in one frame, so
-              it gets the same idea in its own form: the house, then a strand
-              running into the first device. */}
-          <div className="mt-8 flex flex-col items-center sm:hidden">
-            <div className="relative aspect-4/3 w-full max-w-[20rem] overflow-hidden rounded-2xl studio">
-              <img
-                src="/seq/house/640/001.webp"
-                alt=""
-                aria-hidden="true"
-                className="h-full w-full select-none object-cover studio-fade"
-              />
-            </div>
+          {/* A phone stacks the panels, so the same line simply runs on into
+              the first device instead of forking. */}
+          <div className="mt-8 flex justify-center sm:hidden">
             <span
-              className="mt-1 block h-10 w-px bg-[var(--line-strong)]"
+              className="block h-16 w-px bg-[var(--line-strong)]"
               aria-hidden="true"
             />
           </div>

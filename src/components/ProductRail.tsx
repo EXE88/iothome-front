@@ -139,7 +139,7 @@ export default function ProductRail({
                         className="flex items-baseline justify-between gap-4 border-b border-[var(--line)] py-2.5"
                       >
                         <dt className="text-[0.82rem] text-ink-faint">{label}</dt>
-                        <dd className="text-end text-[0.88rem] font-medium text-ink">
+                        <dd className="text-end text-[0.92rem] font-medium text-ink">
                           {value}
                         </dd>
                       </div>

@@ -14,6 +14,9 @@ colors:
   line-strong: "color-mix(in srgb, #0a0a0a 22%, transparent)"
   glass: "color-mix(in srgb, #ffffff 62%, transparent)"
   glass-line: "color-mix(in srgb, #ffffff 70%, transparent)"
+  # Not a palette entry: the opaque stop inside the .studio-fade mask
+  # gradient, where the value is alpha and never reaches a pixel.
+  mask-opaque: "#000"
 typography:
   display:
     fontFamily: "Schibsted Grotesk, Vazirmatn, sans-serif"
@@ -45,12 +48,60 @@ typography:
     fontWeight: 400
     lineHeight: 1.625
     letterSpacing: "normal"
+  term:
+    fontFamily: "Schibsted Grotesk, Vazirmatn, sans-serif"
+    fontSize: "1.12rem"
+    fontWeight: 600
+    lineHeight: 1.35
+    letterSpacing: "-0.02em"
+  ui:
+    fontFamily: "Schibsted Grotesk, Vazirmatn, sans-serif"
+    fontSize: "0.92rem"
+    fontWeight: 500
+    lineHeight: 1.5
+    letterSpacing: "normal"
   label:
     fontFamily: "Schibsted Grotesk, Vazirmatn, sans-serif"
     fontSize: "0.82rem"
     fontWeight: 600
     lineHeight: 1.2
     letterSpacing: "0.14em"
+  cue:
+    fontFamily: "Schibsted Grotesk, Vazirmatn, sans-serif"
+    fontSize: "0.72rem"
+    fontWeight: 400
+    lineHeight: 1.2
+    letterSpacing: "0.22em"
+  sequence-title:
+    fontFamily: "Schibsted Grotesk, Vazirmatn, sans-serif"
+    fontSize: "1.4rem"
+    fontWeight: 600
+    lineHeight: 1.2
+    letterSpacing: "-0.025em"
+  sequence-title-final:
+    fontFamily: "Schibsted Grotesk, Vazirmatn, sans-serif"
+    fontSize: "1.9rem"
+    fontWeight: 600
+    lineHeight: 1.15
+    letterSpacing: "-0.025em"
+  sequence-ordinal:
+    fontFamily: "Schibsted Grotesk, Vazirmatn, sans-serif"
+    fontSize: "2.1rem"
+    fontWeight: 400
+    lineHeight: 1
+    letterSpacing: "normal"
+  sequence-title-final-sm:
+    fontFamily: "Schibsted Grotesk, Vazirmatn, sans-serif"
+    fontSize: "1.5rem"
+    fontWeight: 600
+    lineHeight: 1.15
+    letterSpacing: "-0.025em"
+  sequence-ordinal-sm:
+    fontFamily: "Schibsted Grotesk, Vazirmatn, sans-serif"
+    fontSize: "1.6rem"
+    fontWeight: 400
+    lineHeight: 1
+    letterSpacing: "normal"
 rounded:
   hairline: "2px"
   panel: "1rem"
@@ -205,9 +256,12 @@ A two-surface achromatic palette: printed white, photographed grey, near-black i
 ### Hierarchy
 - **Display** (600, `clamp(2.6rem, 7vw, 5.25rem)`, 0.98, `-0.045em`): The hero headline only. One per page.
 - **Headline** (600, `clamp(2rem, 4vw, 3.2rem)`, 1.03, `-0.035em`): Section titles. Two authored variants exist: the closing section runs hotter at `clamp(2.1rem, 5vw, 4rem)` / 1.02 / `-0.04em` because it is the page's anchor, and the pinned device section runs cooler at `clamp(1.9rem, 3.4vw, 2.7rem)` / 1.05 because it shares its viewport with four renders.
-- **Title** (600, 1.25–1.3rem, `-0.02em`): Card and device-panel names, the wordmark. The final step of the numbered sequence is promoted to `1.5rem`/`1.9rem` to mark it as the one that matters.
+- **Title** (600, 1.25rem, `-0.02em`): Card and device-panel names, the wordmark. Both places a product is named use the same value, so a name never changes size between the trio and the rail. The spec-list term sits one notch under at 1.12rem.
 - **Body** (400, 0.98rem, 1.625): Section prose, capped at 46–52ch. The hero lead runs larger at `clamp(1.02rem, 1.5vw, 1.2rem)` and, uniquely, is set at full `#0a0a0a` rather than soft ink because it sits on a photographed wall whose value shifts as the render scrubs.
-- **Label** (600, 0.82rem, `0.14em`, uppercase): Footer column headings only. The scroll cue is the one other tracked-uppercase item, smaller and looser at 0.72rem / `0.22em` / soft ink.
+- **UI** (400–600, 0.92rem): The single step for interface text — nav links, both nav buttons and their mobile equivalents, footer link columns, card CTA and spec values, the device-panel detail line. There is deliberately no second small step beside it: four near-identical sizes between 0.88 and 0.94 used to do this one's job and none of the differences were visible.
+- **Label** (600, 0.82rem, `0.14em`, uppercase): Footer column headings and spec-list terms. The scroll cue is the one other tracked-uppercase item, smaller and looser at 0.72rem / `0.22em` / soft ink.
+
+**The numbered sequence is the one place off this ramp**, deliberately: its ordinals run 1.6rem/2.1rem and its step titles 1.4rem, rising to 1.5rem/1.9rem on the last one, because the whole point of that section is that only the final step belongs to the buyer. Do not borrow these sizes elsewhere.
 
 ### Named Rules
 

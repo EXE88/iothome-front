@@ -173,15 +173,6 @@ body {
   }
 }
 
-/* SVG path coordinates are physical, so the strands would still leave the
-   right edge in Persian while the house they come from sits on the left. The
-   three landing points are symmetrical about the centre, so mirroring the
-   whole drawing puts the origin back on the house and leaves the endpoints on
-   their panels. */
-[dir="rtl"] .strands {
-  transform: scaleX(-1);
-}
-
 /* Over the near-black closing section the bar flips its whole token set, so
    links, wordmark and both buttons keep their contrast instead of only the
    background changing. */
