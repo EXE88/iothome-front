@@ -1,20 +1,40 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { Schibsted_Grotesk, Vazirmatn } from "next/font/google";
+import localFont from "next/font/local";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "../globals.css";
 import SmoothScroll from "@/components/SmoothScroll";
 import { direction, getDictionary, isLocale, locales, type Locale } from "@/lib/i18n";
 
-const latin = Schibsted_Grotesk({
+// Loaded from files committed in this repository, not fetched from Google at
+// build time: a clean checkout builds with no network, and nothing outside
+// this codebase is ever contacted. See scripts/vendor-fonts.mjs.
+const latin = localFont({
+  src: [
+    {
+      path: "../fonts/SchibstedGrotesk-Variable.woff2",
+      weight: "400 900",
+      style: "normal",
+    },
+  ],
   variable: "--font-latin",
-  subsets: ["latin"],
   display: "swap",
 });
 
-const persian = Vazirmatn({
+const persian = localFont({
+  src: [
+    {
+      path: "../fonts/Vazirmatn-Variable.woff2",
+      weight: "100 900",
+      style: "normal",
+    },
+    {
+      path: "../fonts/Vazirmatn-Latin-Variable.woff2",
+      weight: "100 900",
+      style: "normal",
+    },
+  ],
   variable: "--font-persian",
-  subsets: ["arabic", "latin"],
   display: "swap",
 });
 

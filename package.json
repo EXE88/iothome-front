@@ -6,7 +6,11 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "check:no-remote": "node scripts/check-no-remote.mjs",
+    "vendor:fonts": "node scripts/vendor-fonts.mjs",
+    "frames": "node scripts/optimize-frames.mjs",
+    "verify": "node scripts/check-no-remote.mjs && next build"
   },
   "dependencies": {
     "bootstrap-icons": "^1.13.1",
