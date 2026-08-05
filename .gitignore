@@ -49,3 +49,9 @@ assets/frames/termometer/
 assets/videos/
 shots/
 scripts/
+.claude/
+.impeccable/
+AGENTS.md
+CLAUDE.md
+DESIGN.md
+PRODUCT.md
