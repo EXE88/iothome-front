@@ -128,6 +128,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             ...(init.headers ?? {}),
             ...(token ? { Authorization: `Bearer ${token}` } : {}),
           },
+          // The browser attaches Origin to these cross-origin calls, and
+          // checkout uses it to know which hostname to send the buyer back to
+          // after the gateway. Same-origin GETs would omit it; these are not
+          // same-origin, so it is always there.
         });
 
       let response = await call(session?.access ?? null);

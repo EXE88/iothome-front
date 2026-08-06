@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import localFont from "next/font/local";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "../globals.css";
+import CanonicalHost from "@/components/site/CanonicalHost";
 import SmoothScroll from "@/components/SmoothScroll";
 import { AuthProvider } from "@/lib/auth";
 import { CartProvider } from "@/lib/cart";
@@ -108,6 +109,8 @@ export default async function LocaleLayout({
         {/* A JSX comment never reaches the emitted HTML, and a contract the
             build erases is a contract nobody can audit. */}
         <div hidden dangerouslySetInnerHTML={{ __html: DIRECTION_CONTRACT }} />
+        {/* One hostname for the whole app, or two cookie jars and two logins. */}
+        <CanonicalHost />
         <SmoothScroll />
         {/* The basket sits outside the session on purpose: a visitor builds
             one before signing up, and it has to survive the sign-up. */}
