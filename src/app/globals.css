@@ -20,6 +20,11 @@
   --studio-edge: #a2a2a2;
   --studio-floor: #d4d4d4;
 
+  /* The only two hues in the system, and both are state signals rather than
+     decoration: a failure the user must read, and a device that is live. */
+  --danger: #a8181b;
+  --live: #1a6b3c;
+
   --line: color-mix(in srgb, var(--ink) 12%, transparent);
   --line-strong: color-mix(in srgb, var(--ink) 22%, transparent);
 

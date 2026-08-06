@@ -4,6 +4,7 @@ import localFont from "next/font/local";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "../globals.css";
 import SmoothScroll from "@/components/SmoothScroll";
+import { AuthProvider } from "@/lib/auth";
 import { direction, getDictionary, isLocale, locales, type Locale } from "@/lib/i18n";
 
 // Loaded from files committed in this repository, not fetched from Google at
@@ -107,7 +108,7 @@ export default async function LocaleLayout({
             build erases is a contract nobody can audit. */}
         <div hidden dangerouslySetInnerHTML={{ __html: DIRECTION_CONTRACT }} />
         <SmoothScroll />
-        {children}
+        <AuthProvider>{children}</AuthProvider>
       </body>
     </html>
   );
