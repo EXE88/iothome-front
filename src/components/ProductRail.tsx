@@ -1,15 +1,12 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useRef } from "react";
 import Reveal from "./Reveal";
+import { formatPrice } from "@/lib/format";
+import { copyFor, imageFor, type Product } from "@/lib/products";
 import type { Dictionary, Locale } from "@/lib/i18n";
-
-const CARDS = [
-  { key: "thermometer", sequence: "termometer" },
-  { key: "lamp", sequence: "lamp" },
-  { key: "camera", sequence: "camera" },
-] as const;
 
 /**
  * The finished renders, on the studio ground they were shot on, under glass.
@@ -18,12 +15,18 @@ const CARDS = [
  * so the card reads as a pane laid over the scene rather than a box drawn on
  * top of it.
  *
- * No prices: none exist yet, and inventing one would be inventing a claim.
+ * The cards are the catalogue, fetched on the server by the page above and
+ * handed down — not a hardcoded list of three. Adding a product in the admin
+ * puts it here, with its real price and its real stock, and a product that is
+ * withdrawn leaves. The card links into the shop, because the landing page is
+ * a showcase and buying happens somewhere built for it.
  */
 export default function ProductRail({
+  products,
   dict,
   locale,
 }: {
+  products: Product[];
   dict: Dictionary;
   locale: Locale;
 }) {
@@ -40,6 +43,8 @@ export default function ProductRail({
     rail.scrollBy({ left: distance * step * (rtl ? -1 : 1), behavior: "smooth" });
   };
 
+  if (products.length === 0) return null;
+
   return (
     <section
       id="products"
@@ -53,10 +58,10 @@ export default function ProductRail({
               id="products-title"
               className="text-balance text-[clamp(2rem,4vw,3.2rem)] font-semibold leading-[1.03] tracking-[-0.035em]"
             >
-              {dict.products.title}
+              {dict.shop.title}
             </h2>
             <p className="mt-3 text-[1rem] leading-relaxed text-ink-soft">
-              {dict.products.lead}
+              {dict.shop.lead}
             </p>
             <p className="mt-4 flex items-start gap-2.5 text-[0.92rem] leading-relaxed text-ink">
               <i
@@ -67,11 +72,17 @@ export default function ProductRail({
             </p>
           </div>
 
-          <div className="hidden items-center gap-2 sm:flex">
+          <div className="flex items-center gap-2">
+            <Link
+              href={`/${locale}/shop`}
+              className="hidden rounded-full border border-[var(--line-strong)] px-5 py-2.5 text-[0.92rem] font-medium text-ink transition-colors duration-200 hover:bg-[color-mix(in_srgb,var(--ink)_8%,transparent)] sm:inline-block"
+            >
+              {dict.nav.shop}
+            </Link>
             <button
               type="button"
               onClick={() => nudge(-1)}
-              className="flex h-11 w-11 items-center justify-center rounded-full border border-[var(--line-strong)] text-ink transition-colors duration-200 hover:bg-[color-mix(in_srgb,var(--ink)_8%,transparent)]"
+              className="hidden h-11 w-11 items-center justify-center rounded-full border border-[var(--line-strong)] text-ink transition-colors duration-200 hover:bg-[color-mix(in_srgb,var(--ink)_8%,transparent)] sm:flex"
               aria-label={dict.products.prev}
             >
               <i className="bi bi-arrow-left rtl:rotate-180" aria-hidden="true" />
@@ -79,7 +90,7 @@ export default function ProductRail({
             <button
               type="button"
               onClick={() => nudge(1)}
-              className="flex h-11 w-11 items-center justify-center rounded-full border border-[var(--line-strong)] text-ink transition-colors duration-200 hover:bg-[color-mix(in_srgb,var(--ink)_8%,transparent)]"
+              className="hidden h-11 w-11 items-center justify-center rounded-full border border-[var(--line-strong)] text-ink transition-colors duration-200 hover:bg-[color-mix(in_srgb,var(--ink)_8%,transparent)] sm:flex"
               aria-label={dict.products.next}
             >
               <i className="bi bi-arrow-right rtl:rotate-180" aria-hidden="true" />
@@ -96,65 +107,63 @@ export default function ProductRail({
             while the rail itself still runs to the edge. */}
         <div className="hidden shrink-0 lg:block lg:w-[max(0px,calc((100vw-72rem)/2))]" />
 
-        {CARDS.map(({ key, sequence }, index) => {
-          const copy = dict.devices[key];
-          const facts = dict.products.cards[key];
-          const labels = dict.products.labels;
-          const rows = [
-            [labels.panel, facts.panel],
-            [labels.behaviour, facts.behaviour],
-          ];
+        {products.map((product, index) => {
+          const image = imageFor(product);
+          const copy = copyFor(product, locale);
           return (
             <Reveal
-              key={key}
+              key={product.id}
               as="article"
               delay={index * 0.08}
               className="w-[78vw] shrink-0 snap-start sm:w-[22rem]"
             >
-              <a
-                href={`/${locale}/signup`}
+              <Link
+                href={`/${locale}/shop/${product.slug}`}
                 className="group flex h-full flex-col overflow-hidden rounded-3xl border border-[var(--glass-line)] bg-[var(--glass)] shadow-[0_1px_2px_rgba(10,10,10,0.05),0_24px_48px_-24px_rgba(10,10,10,0.35)] backdrop-blur-xl backdrop-saturate-150 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1.5"
               >
-                <div className="relative aspect-4/3 overflow-hidden">
-                  <Image
-                    src={`/seq/${sequence}/640/001.webp`}
-                    alt={copy.name}
-                    fill
-                    sizes="(max-width: 640px) 78vw, 22rem"
-                    className="object-cover transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.04]"
-                  />
-                </div>
+                {image && (
+                  <div className="relative aspect-4/3 overflow-hidden">
+                    <Image
+                      src={image}
+                      alt={copy.name}
+                      fill
+                      sizes="(max-width: 640px) 78vw, 22rem"
+                      className="object-cover transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.04]"
+                    />
+                  </div>
+                )}
+
                 <div className="flex flex-1 flex-col p-6">
-                  <h3 className="text-[1.25rem] font-semibold tracking-[-0.02em]">
+                  <h3
+                    className="text-[1.25rem] font-semibold tracking-[-0.02em]"
+                    dir="auto"
+                  >
                     {copy.name}
                   </h3>
+                  <p
+                    className="mt-2 line-clamp-2 text-[0.92rem] leading-relaxed text-ink-soft"
+                    dir="auto"
+                  >
+                    {copy.description}
+                  </p>
 
-                  {/* Ownership facts, not a second description: what the buyer
-                      does, what it joins, what shows up in their panel. The
-                      section above already said what each device is. */}
-                  <dl className="mt-4 flex-1 border-t border-[var(--line)]">
-                    {rows.map(([label, value]) => (
-                      <div
-                        key={label}
-                        className="flex items-baseline justify-between gap-4 border-b border-[var(--line)] py-2.5"
-                      >
-                        <dt className="text-[0.82rem] text-ink-faint">{label}</dt>
-                        <dd className="text-end text-[0.92rem] font-medium text-ink">
-                          {value}
-                        </dd>
-                      </div>
-                    ))}
-                  </dl>
-
-                  <span className="mt-6 inline-flex items-center gap-2 text-[0.92rem] font-medium text-ink">
-                    {dict.products.cta}
-                    <i
-                      className="bi bi-arrow-right text-[0.9em] transition-transform duration-300 group-hover:translate-x-1 rtl:rotate-180 rtl:group-hover:-translate-x-1"
-                      aria-hidden="true"
-                    />
-                  </span>
+                  <div className="mt-auto flex items-baseline justify-between gap-4 border-t border-[var(--line)] pt-4">
+                    <p className="text-[1.05rem] font-semibold tabular-nums tracking-[-0.02em]">
+                      {formatPrice(product.price, locale)}
+                      <span className="ms-1.5 text-[0.8rem] font-normal text-ink-faint">
+                        {dict.shop.currency}
+                      </span>
+                    </p>
+                    <span className="inline-flex items-center gap-2 text-[0.92rem] font-medium text-ink">
+                      {dict.shop.details}
+                      <i
+                        className="bi bi-arrow-right text-[0.9em] transition-transform duration-300 group-hover:translate-x-1 rtl:rotate-180 rtl:group-hover:-translate-x-1"
+                        aria-hidden="true"
+                      />
+                    </span>
+                  </div>
                 </div>
-              </a>
+              </Link>
             </Reveal>
           );
         })}

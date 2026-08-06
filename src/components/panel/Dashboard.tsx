@@ -127,9 +127,12 @@ export default function Dashboard({
           <p className="mx-auto mt-2 max-w-sm text-[0.95rem] leading-relaxed text-ink-soft">
             {dict.panel.empty.body}
           </p>
+          {/* The shop, not the landing page's rail anchor. Sending a
+              signed-in owner to a marketing section that then told them to
+              sign in to buy was the whole bug. */}
           <Link
-            href={`/${locale}#products`}
-            className="mt-6 inline-flex items-center gap-2 rounded-full bg-ink px-6 py-3 text-[0.92rem] font-medium text-paper"
+            href={`/${locale}/shop`}
+            className="mt-6 inline-flex items-center gap-2 rounded-full bg-ink px-6 py-3 text-[0.92rem] font-medium text-paper transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5"
           >
             {dict.panel.empty.cta}
             <i

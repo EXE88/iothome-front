@@ -1,9 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import type { ReactNode } from "react";
-import { useAuth } from "@/lib/auth";
+import AccountMenu from "@/components/site/AccountMenu";
+import CartButton from "@/components/site/CartButton";
 import type { Connection } from "@/lib/useUserSocket";
 import type { Dictionary, Locale } from "@/lib/i18n";
 
@@ -36,8 +36,6 @@ export default function PanelShell({
   onRetry?: () => void;
   children: ReactNode;
 }) {
-  const router = useRouter();
-  const { user, logout } = useAuth();
   const other: Locale = locale === "fa" ? "en" : "fa";
 
   const label =
@@ -91,10 +89,6 @@ export default function PanelShell({
               </button>
             )}
 
-            <span className="hidden text-[0.85rem] text-ink-soft sm:inline" dir="ltr">
-              {user?.email}
-            </span>
-
             {/* Without a switch here, a Persian speaker who lands on /en has
                 no way back for the whole signed-in session. */}
             <Link
@@ -106,20 +100,13 @@ export default function PanelShell({
               {other === "fa" ? "فارسی" : "EN"}
             </Link>
 
-            <button
-              type="button"
-              onClick={async () => {
-                await logout();
-                router.replace(`/${locale}/login`);
-              }}
-              // The label collapses below 640px, so the button needs a name of
-              // its own or it is an unlabelled icon to a screen reader.
-              aria-label={dict.panel.nav.logout}
-              className="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[0.85rem] font-medium text-ink-soft transition-colors hover:bg-[color-mix(in_srgb,var(--ink)_6%,transparent)] hover:text-ink"
-            >
-              <i className="bi bi-box-arrow-right rtl:rotate-180" aria-hidden="true" />
-              <span className="hidden sm:inline">{dict.panel.nav.logout}</span>
-            </button>
+            <CartButton dict={dict} locale={locale} />
+
+            {/* The same menu the shop and the landing bar carry. The panel
+                used to offer only a logout button, so the shop, the orders
+                and the profile were unreachable from the one screen an owner
+                actually spends time on. */}
+            <AccountMenu dict={dict} locale={locale} />
           </div>
         </div>
       </header>

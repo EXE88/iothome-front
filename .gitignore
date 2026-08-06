@@ -1,6 +1,8 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
-# dependencies
+# ---------------------------------------------------------------------------
+# Dependencies and build output
+# ---------------------------------------------------------------------------
 /node_modules
 /.pnp
 .pnp.*
@@ -9,49 +11,90 @@
 !.yarn/plugins
 !.yarn/releases
 !.yarn/versions
-
-# testing
-/coverage
-
-# next.js
 /.next/
 /out/
-
-# production
 /build
-
-# misc
-.DS_Store
-*.pem
-
-# debug
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-.pnpm-debug.log*
-
-# env files (can opt-in for committing if needed)
-.env*
-
-# vercel
-.vercel
-
-# typescript
+/coverage
 *.tsbuildinfo
 next-env.d.ts
+.vercel
 
-# Copied from assets/ at build time; large binary sequences stay out of git.
+# ---------------------------------------------------------------------------
+# Environment — .env holds this machine's addresses and is never shared.
+# The template is committed so a fresh clone knows what to fill in.
+# ---------------------------------------------------------------------------
+.env
+.env.*
+!.env.example
+
+# ---------------------------------------------------------------------------
+# Generated media
+#
+# Everything under here is produced from `assets/` by `npm run frames` and by
+# scripts/build-auth-art.mjs. Large binaries that can be rebuilt do not belong
+# in a repository.
+# ---------------------------------------------------------------------------
 public/frames
 assets/frames/house/
 assets/frames/camera/
 assets/frames/lamp/
 assets/frames/termometer/
 assets/videos/
+
+# ---------------------------------------------------------------------------
+# Screenshots
+#
+# Written by scripts/shots.mjs and scripts/app-shots.mjs during design review.
+# They are review artefacts, not source, and they are large.
+# ---------------------------------------------------------------------------
 shots/
-scripts/
-.claude/
+*.png
+*.jpg
+*.jpeg
+!public/**/*.png
+!src/**/*.png
+
+# ---------------------------------------------------------------------------
+# Assistant and design-tool working files
+#
+# These stay on disk — they are how a new session learns the design system and
+# how to run the app — but they are not part of the published repository.
+#
+# launch.json is the exception: it is how the dev server is started, it is
+# small, and a checkout without it cannot be run. Note the `.claude/*` form
+# rather than `.claude/` — git will not re-include a file inside a directory
+# it has already excluded, so the directory itself must stay walkable.
+# ---------------------------------------------------------------------------
+.claude/*
+!.claude/launch.json
 .impeccable/
+.cursor/
+.aider*
 AGENTS.md
 CLAUDE.md
-DESIGN.md
-PRODUCT.md
+
+# ---------------------------------------------------------------------------
+# Internal documents
+#
+# README.md is the repository's own front door and stays. docs/ holds the
+# design record and the product truth — working notes for building this, kept
+# out of the public history but kept on disk, because the next session needs
+# them to design anything consistently.
+# ---------------------------------------------------------------------------
+*.md
+!README.md
+docs/
+
+# ---------------------------------------------------------------------------
+# Editor and OS noise
+# ---------------------------------------------------------------------------
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.pem
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*

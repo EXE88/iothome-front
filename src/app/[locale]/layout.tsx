@@ -5,6 +5,7 @@ import "bootstrap-icons/font/bootstrap-icons.css";
 import "../globals.css";
 import SmoothScroll from "@/components/SmoothScroll";
 import { AuthProvider } from "@/lib/auth";
+import { CartProvider } from "@/lib/cart";
 import { direction, getDictionary, isLocale, locales, type Locale } from "@/lib/i18n";
 
 // Loaded from files committed in this repository, not fetched from Google at
@@ -108,7 +109,11 @@ export default async function LocaleLayout({
             build erases is a contract nobody can audit. */}
         <div hidden dangerouslySetInnerHTML={{ __html: DIRECTION_CONTRACT }} />
         <SmoothScroll />
-        <AuthProvider>{children}</AuthProvider>
+        {/* The basket sits outside the session on purpose: a visitor builds
+            one before signing up, and it has to survive the sign-up. */}
+        <AuthProvider>
+          <CartProvider>{children}</CartProvider>
+        </AuthProvider>
       </body>
     </html>
   );

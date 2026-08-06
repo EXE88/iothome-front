@@ -1,6 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import AccountMenu from "./site/AccountMenu";
+import CartButton from "./site/CartButton";
+import { useAuth } from "@/lib/auth";
 import type { Dictionary, Locale } from "@/lib/i18n";
 
 /**
@@ -19,6 +22,11 @@ export default function Nav({
   const [onDark, setOnDark] = useState(false);
   const [open, setOpen] = useState(false);
   const other: Locale = locale === "fa" ? "en" : "fa";
+  // The landing page is public, but it is not only seen by strangers. Someone
+  // signed in who follows a link back here was being offered "log in" and
+  // "create account", and the buy links sent them to a page saying they had to
+  // sign in to order — which they already had.
+  const { status } = useAuth();
 
   useEffect(() => {
     const onScroll = () => {
@@ -52,6 +60,7 @@ export default function Nav({
   }, [open]);
 
   const links = [
+    { href: `/${locale}/shop`, label: dict.nav.shop },
     { href: "#devices", label: dict.nav.products },
     { href: "#how", label: dict.nav.how },
   ];
@@ -97,19 +106,32 @@ export default function Nav({
           >
             {other === "fa" ? "فارسی" : "EN"}
           </a>
-          <a
-            href={`/${locale}/login`}
-            className="rounded-full px-4 py-2 text-[0.92rem] font-medium text-ink transition-colors duration-200 hover:bg-[color-mix(in_srgb,var(--ink)_7%,transparent)]"
-          >
-            {dict.nav.login}
-          </a>
-          <a
-            href={`/${locale}/signup`}
-            data-cta
-            className="rounded-full bg-ink px-5 py-2 text-[0.92rem] font-medium text-paper transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5"
-          >
-            {dict.nav.signup}
-          </a>
+
+          <CartButton dict={dict} locale={locale} onDark={onDark} />
+
+          {status === "authenticated" ? (
+            <AccountMenu dict={dict} locale={locale} onDark={onDark} />
+          ) : status === "anonymous" ? (
+            <>
+              <a
+                href={`/${locale}/login`}
+                className="rounded-full px-4 py-2 text-[0.92rem] font-medium text-ink transition-colors duration-200 hover:bg-[color-mix(in_srgb,var(--ink)_7%,transparent)]"
+              >
+                {dict.nav.login}
+              </a>
+              <a
+                href={`/${locale}/signup`}
+                data-cta
+                className="rounded-full bg-ink px-5 py-2 text-[0.92rem] font-medium text-paper transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5"
+              >
+                {dict.nav.signup}
+              </a>
+            </>
+          ) : (
+            // The session is restored from a cookie a moment after mount.
+            // Reserving the space stops the bar from reflowing when it lands.
+            <span className="h-9 w-24" aria-hidden="true" />
+          )}
         </div>
 
         <button
@@ -145,18 +167,37 @@ export default function Nav({
             </a>
           </div>
           <div className="mt-3 flex gap-2 border-t border-[var(--line)] pt-4">
-            <a
-              href={`/${locale}/login`}
-              className="flex-1 rounded-full border border-[var(--line-strong)] py-3 text-center text-[0.92rem] font-medium"
-            >
-              {dict.nav.login}
-            </a>
-            <a
-              href={`/${locale}/signup`}
-              className="flex-1 rounded-full bg-ink py-3 text-center text-[0.92rem] font-medium text-paper"
-            >
-              {dict.nav.signup}
-            </a>
+            {status === "authenticated" ? (
+              <>
+                <a
+                  href={`/${locale}/cart`}
+                  className="flex-1 rounded-full border border-[var(--line-strong)] py-3 text-center text-[0.92rem] font-medium"
+                >
+                  {dict.nav.cart}
+                </a>
+                <a
+                  href={`/${locale}/panel`}
+                  className="flex-1 rounded-full bg-ink py-3 text-center text-[0.92rem] font-medium text-paper"
+                >
+                  {dict.nav.panel}
+                </a>
+              </>
+            ) : (
+              <>
+                <a
+                  href={`/${locale}/login`}
+                  className="flex-1 rounded-full border border-[var(--line-strong)] py-3 text-center text-[0.92rem] font-medium"
+                >
+                  {dict.nav.login}
+                </a>
+                <a
+                  href={`/${locale}/signup`}
+                  className="flex-1 rounded-full bg-ink py-3 text-center text-[0.92rem] font-medium text-paper"
+                >
+                  {dict.nav.signup}
+                </a>
+              </>
+            )}
           </div>
         </div>
       )}

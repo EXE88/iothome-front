@@ -7,6 +7,7 @@ import ProductRail from "@/components/ProductRail";
 import Trust from "@/components/Trust";
 import Closing from "@/components/Closing";
 import Footer from "@/components/Footer";
+import { fetchProducts } from "@/lib/products";
 import { getDictionary, isLocale } from "@/lib/i18n";
 
 export default async function LandingPage({
@@ -18,6 +19,11 @@ export default async function LandingPage({
   if (!isLocale(locale)) notFound();
   const dict = getDictionary(locale);
 
+  // The rail is the catalogue, not a copy of it. If the backend is down the
+  // rail renders nothing rather than showing three products that may not
+  // exist — the rest of the page is a story about the product and still reads.
+  const products = (await fetchProducts()) ?? [];
+
   return (
     <>
       <Nav dict={dict} locale={locale} />
@@ -25,7 +31,7 @@ export default async function LandingPage({
         <Hero dict={dict} locale={locale} />
         <DeviceTrio dict={dict} />
         <HowItWorks dict={dict} />
-        <ProductRail dict={dict} locale={locale} />
+        <ProductRail products={products} dict={dict} locale={locale} />
         <Trust dict={dict} />
         <Closing dict={dict} locale={locale} />
       </main>

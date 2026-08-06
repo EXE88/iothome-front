@@ -1,17 +1,22 @@
 import type { NextResponse } from "next/server";
+import { REFRESH_COOKIE_MAX_AGE_DAYS } from "@/lib/config";
 
 /**
  * The refresh token never reaches JavaScript.
  *
  * The access token has to live in JS — every device command is signed with it,
- * so there is no way around that — but it expires in 30 minutes and is held
- * only in memory. The refresh token is the long-lived one, so it stays in an
- * httpOnly cookie where a cross-site script cannot read it, and only these
- * route handlers ever see it.
+ * so there is no way around that — but it is short-lived and held only in
+ * memory. The refresh token is the long-lived one, so it stays in an httpOnly
+ * cookie where a cross-site script cannot read it, and only these route
+ * handlers ever see it.
+ *
+ * The cookie's life is set from `.env` and has to match the backend's
+ * REFRESH_TOKEN_LIFETIME_DAYS: a cookie that outlives its token leaves the
+ * user looking at a session that is not one.
  */
 export const REFRESH_COOKIE = "sl_refresh";
 
-const FOURTEEN_DAYS = 60 * 60 * 24 * 14;
+const MAX_AGE_SECONDS = 60 * 60 * 24 * REFRESH_COOKIE_MAX_AGE_DAYS;
 
 export function setRefreshCookie(response: NextResponse, token: string) {
   response.cookies.set(REFRESH_COOKIE, token, {
@@ -19,7 +24,7 @@ export function setRefreshCookie(response: NextResponse, token: string) {
     sameSite: "lax",
     secure: process.env.NODE_ENV === "production",
     path: "/",
-    maxAge: FOURTEEN_DAYS,
+    maxAge: MAX_AGE_SECONDS,
   });
 }
 

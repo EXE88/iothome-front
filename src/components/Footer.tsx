@@ -32,15 +32,32 @@ export default function Footer({
               <h2 className="text-[0.82rem] font-semibold uppercase tracking-[0.14em] text-ink-faint">
                 {dict.footer.product}
               </h2>
+              {/* Real routes, not page anchors: this footer is on the shop,
+                  the basket and the help page too, where `#how` points at
+                  nothing. */}
               <ul className="mt-4 flex flex-col gap-2.5 text-[0.92rem]">
                 <li>
-                  <a href="#devices" className="text-ink-soft transition-colors hover:text-ink">
-                    {dict.nav.products}
+                  <a
+                    href={`/${locale}/shop`}
+                    className="text-ink-soft transition-colors hover:text-ink"
+                  >
+                    {dict.nav.shop}
                   </a>
                 </li>
                 <li>
-                  <a href="#how" className="text-ink-soft transition-colors hover:text-ink">
+                  <a
+                    href={`/${locale}#how`}
+                    className="text-ink-soft transition-colors hover:text-ink"
+                  >
                     {dict.nav.how}
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href={`/${locale}/help`}
+                    className="text-ink-soft transition-colors hover:text-ink"
+                  >
+                    {dict.nav.help}
                   </a>
                 </li>
               </ul>
@@ -61,10 +78,18 @@ export default function Footer({
                 </li>
                 <li>
                   <a
-                    href={`/${locale}/signup`}
+                    href={`/${locale}/panel`}
                     className="text-ink-soft transition-colors hover:text-ink"
                   >
-                    {dict.nav.signup}
+                    {dict.nav.panel}
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href={`/${locale}/orders`}
+                    className="text-ink-soft transition-colors hover:text-ink"
+                  >
+                    {dict.nav.orders}
                   </a>
                 </li>
               </ul>
