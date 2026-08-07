@@ -152,3 +152,30 @@ export function nonce() {
   crypto.getRandomValues(bytes);
   return hex(bytes);
 }
+
+/**
+ * A v4 UUID, for the `request_id` that ties a command to its answer.
+ *
+ * `crypto.randomUUID` is secure-context-only, exactly like `crypto.subtle`
+ * above — over plain http on anything that is not localhost it is simply not
+ * there. That is the ordinary case for a staging box on a bare IP, and the
+ * whole panel stops being able to send commands the moment it is deployed
+ * that way.
+ *
+ * `crypto.getRandomValues` carries no such restriction, so the fallback is
+ * the same randomness laid out by hand. Do not reach for `Math.random()` here:
+ * the request id is what pairs a reply with the control that is waiting for
+ * it, and two colliding ids would cross two commands' answers over.
+ */
+export function randomUUID(): string {
+  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+    return crypto.randomUUID();
+  }
+
+  const bytes = new Uint8Array(16);
+  crypto.getRandomValues(bytes);
+  bytes[6] = (bytes[6] & 0x0f) | 0x40; // version 4
+  bytes[8] = (bytes[8] & 0x3f) | 0x80; // variant 1
+  const s = hex(bytes);
+  return `${s.slice(0, 8)}-${s.slice(8, 12)}-${s.slice(12, 16)}-${s.slice(16, 20)}-${s.slice(20)}`;
+}

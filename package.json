@@ -10,7 +10,9 @@
     "check:no-remote": "node scripts/check-no-remote.mjs",
     "vendor:fonts": "node scripts/vendor-fonts.mjs",
     "frames": "node scripts/optimize-frames.mjs",
-    "verify": "node scripts/check-no-remote.mjs && next build"
+    "verify": "node scripts/check-no-remote.mjs && next build",
+    "e2e": "node scripts/panel-e2e.mjs",
+    "e2e:insecure": "node scripts/panel-insecure-e2e.mjs"
   },
   "dependencies": {
     "bootstrap-icons": "^1.13.1",

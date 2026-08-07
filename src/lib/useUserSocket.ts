@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { userSocketUrl } from "./config";
-import { buildMessage, canonical, hmacHex, nonce } from "./hmac";
+import { buildMessage, canonical, hmacHex, nonce, randomUUID } from "./hmac";
 
 export type Gadget = {
   uid: string;
@@ -237,7 +237,9 @@ export function useUserSocket({ accessToken, onError }: Options) {
       const token = tokenRef.current;
       if (!token) return null;
 
-      const requestId = crypto.randomUUID();
+      // Not crypto.randomUUID(): that one does not exist over plain http on a
+      // non-localhost host, which is how a staging box on a bare IP is served.
+      const requestId = randomUUID();
       const timestamp = Math.floor(Date.now() / 1000);
       const n = nonce();
       const signature = await hmacHex(
