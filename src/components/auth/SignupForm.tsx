@@ -55,7 +55,16 @@ export default function SignupForm({
 
       // The account exists but cannot log in until the emailed code is used,
       // so go straight there with the address already filled.
-      router.push(`/${locale}/verify?email=${encodeURIComponent(values.email)}`);
+      //
+      // `verification_pending` means this address was signed up for before and
+      // never verified — the backend re-sent the code rather than refusing,
+      // because "already registered" would strand someone who can neither
+      // register nor log in. Saying a new code went out explains the screen
+      // they land on.
+      const resent = data.code === "verification_pending" ? "&resent=1" : "";
+      router.push(
+        `/${locale}/verify?email=${encodeURIComponent(values.email)}${resent}`,
+      );
     } catch (error) {
       if (error instanceof ApiError) {
         setErrors({

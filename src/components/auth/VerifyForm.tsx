@@ -25,7 +25,12 @@ export default function VerifyForm({
   const [code, setCode] = useState("");
   const [errors, setErrors] = useState<Record<string, string | null>>({});
   const [formError, setFormError] = useState<string | null>(null);
-  const [notice, setNotice] = useState<string | null>(null);
+  // `resent=1` means signup found an unverified account for this address and
+  // sent a fresh code instead of refusing. Without saying so, arriving here
+  // from the signup form looks like the signup silently failed.
+  const [notice, setNotice] = useState<string | null>(
+    params.get("resent") ? dict.auth.verify.resent : null,
+  );
   const [busy, setBusy] = useState(false);
   // The backend throttles resends; mirroring that here stops the user from
   // pressing it repeatedly and collecting 429s instead of an email.
