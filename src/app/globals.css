@@ -224,3 +224,19 @@ nav[data-on-dark] a[data-cta]:hover {
 .rail::-webkit-scrollbar {
   display: none;
 }
+
+/* ---------------------------------------------------------------------------
+   Landing preloader
+
+   The splash is server-rendered so it owns the very first paint — as a
+   client-only component it arrived after the landing page had already been
+   drawn, which showed the visitor the page, then a grey screen, then the page
+   again.
+
+   Shipping it in the HTML moves the "is a splash needed at all?" question
+   earlier than React can answer it, so `PreloadGate` answers it in an inline
+   script and this rule acts on the result before anything is painted.
+--------------------------------------------------------------------------- */
+html[data-preload="skip"] .preload-gate {
+  display: none;
+}

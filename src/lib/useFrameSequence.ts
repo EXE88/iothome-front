@@ -4,6 +4,21 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 export const FRAME_COUNT = 80;
 
+/** Every sequence the landing page scrubs, in the order it meets them. */
+export const LANDING_SEQUENCES = ["house", "termometer", "lamp", "camera"] as const;
+
+/**
+ * Which frame set this viewport gets.
+ *
+ * A phone never needs the 1280px set; picking here rather than in CSS keeps
+ * the wrong set from being fetched at all. Exported because the preloader has
+ * to warm exactly the set the canvas will ask for — warm the other one and the
+ * progress bar is measuring bytes nobody is waiting on.
+ */
+export function frameWidth(): 1280 | 640 {
+  return typeof window !== "undefined" && window.innerWidth < 768 ? 640 : 1280;
+}
+
 /** Frame 080 is fully exploded and 001 is the finished object, so scrubbing
  *  down the numbers assembles it. `progress` 0 → 1 means "assemble". */
 export function frameSrc(sequence: string, width: 1280 | 640, index: number) {
@@ -62,10 +77,7 @@ export function useFrameSequence({
     if (!enabled) return;
     let cancelled = false;
 
-    // A phone never needs the 1280px set; picking here rather than in CSS
-    // keeps the wrong set from being fetched at all.
-    const width: 1280 | 640 =
-      typeof window !== "undefined" && window.innerWidth < 768 ? 640 : 1280;
+    const width = frameWidth();
 
     const images: HTMLImageElement[] = [];
     let done = 0;

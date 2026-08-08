@@ -242,6 +242,9 @@ succeed with the network blocked.
 | `npm run vendor:fonts` | Re-vendor the font files |
 | `npm run e2e` | Drive a real browser against the running stack: log in, wait for the signed socket, press every control, confirm each device answered |
 | `npm run e2e:insecure` | The same, with `crypto.subtle` and `crypto.randomUUID` stripped — the path a plain-http deployment takes |
+| `npm run manifest` | Rebuild `public/asset-manifest.json`. Runs as part of `build`; only needed on its own after editing `public/seq` by hand |
+| `npm run cache:test` | Prove the frame cache: cold download, warm visit with zero network, one edited frame refetched alone, a removed frame evicted. Needs the app on 3001 (`npx next start -p 3001`) — it runs a counting proxy on 3000 |
+| `npm run paint:test` | Prove the landing splash owns the first paint on a cold visit, and never appears on a warm one |
 
 ---
 

@@ -7,6 +7,8 @@ import ProductRail from "@/components/ProductRail";
 import Trust from "@/components/Trust";
 import Closing from "@/components/Closing";
 import Footer from "@/components/Footer";
+import Preloader from "@/components/Preloader";
+import { assetRevision } from "@/lib/assetRevision";
 import { fetchProducts } from "@/lib/products";
 import { getDictionary, isLocale } from "@/lib/i18n";
 
@@ -26,6 +28,10 @@ export default async function LandingPage({
 
   return (
     <>
+      {/* Only this page. Every other route is type and images that stream in
+          fine on their own; this one is four eighty-frame sequences whose
+          whole point is that they move without stuttering. */}
+      <Preloader dict={dict} locale={locale} revision={assetRevision()} />
       <Nav dict={dict} locale={locale} />
       <main>
         <Hero dict={dict} locale={locale} />

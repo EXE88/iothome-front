@@ -4,6 +4,8 @@ import localFont from "next/font/local";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "../globals.css";
 import CanonicalHost from "@/components/site/CanonicalHost";
+import PreloadGate from "@/components/PreloadGate";
+import FrameCache from "@/components/site/FrameCache";
 import SmoothScroll from "@/components/SmoothScroll";
 import { AuthProvider } from "@/lib/auth";
 import { CartProvider } from "@/lib/cart";
@@ -106,11 +108,18 @@ export default async function LocaleLayout({
       className={`${latin.variable} ${persian.variable} antialiased`}
     >
       <body>
+        {/* First thing in the document: it hides the landing splash before the
+            browser paints, when this build's frames are already cached. Any
+            later and the decision is visible as a flash. */}
+        <PreloadGate />
         {/* A JSX comment never reaches the emitted HTML, and a contract the
             build erases is a contract nobody can audit. */}
         <div hidden dangerouslySetInnerHTML={{ __html: DIRECTION_CONTRACT }} />
         {/* One hostname for the whole app, or two cookie jars and two logins. */}
         <CanonicalHost />
+        {/* Registered app-wide so a visitor who lands on the shop first still
+            has the frames cached by the time they reach the landing page. */}
+        <FrameCache />
         <SmoothScroll />
         {/* The basket sits outside the session on purpose: a visitor builds
             one before signing up, and it has to survive the sign-up. */}

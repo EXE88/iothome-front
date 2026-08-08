@@ -35,6 +35,8 @@ next-env.d.ts
 # in a repository.
 # ---------------------------------------------------------------------------
 public/frames
+# Rebuilt by `npm run build` from the frames it describes.
+public/asset-manifest.json
 assets/frames/house/
 assets/frames/camera/
 assets/frames/lamp/

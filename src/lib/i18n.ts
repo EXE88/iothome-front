@@ -39,6 +39,10 @@ const dictionaries = {
       logout: "خروج",
       account: "حساب من",
     },
+    loading: {
+      label: "در حال آماده‌سازی",
+      skip: "ورود به سایت",
+    },
     hero: {
       title: "با وای‌فای خانه‌ی شما از راه می‌رسد",
       lead: "شبکه‌ی خانه‌تان را یک بار موقع خرید وارد می‌کنید. ما همان را داخل دستگاه می‌گذاریم. شما فقط دوشاخه را می‌زنید.",
@@ -468,6 +472,10 @@ const dictionaries = {
       cart: "Basket",
       logout: "Log out",
       account: "My account",
+    },
+    loading: {
+      label: "Getting things ready",
+      skip: "Go in anyway",
     },
     hero: {
       title: "It arrives knowing your Wi-Fi",
