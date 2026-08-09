@@ -92,3 +92,26 @@ export function warmFrameCache(width: number) {
     )
     .catch(() => {});
 }
+
+/**
+ * Is a frame cache actually in play right now?
+ *
+ * The splash's "already loaded, skip me" marker is only honest if something is
+ * really holding those frames. A service worker needs a secure context, so on
+ * `http://<public-ip>` — and in development, where the worker is deliberately
+ * unregistered — there is no Cache Storage at all. Writing the marker anyway
+ * produced the worst of both: no splash *and* no cache, so every reload pulled
+ * all 5 MB from the server one frame at a time with nothing on screen to say
+ * why.
+ *
+ * `controller` rather than `ready`: a worker that is registered but not yet
+ * controlling this page did not serve these frames and will not serve the next
+ * reload's either.
+ */
+export function frameCacheActive() {
+  return (
+    typeof navigator !== "undefined" &&
+    "serviceWorker" in navigator &&
+    navigator.serviceWorker.controller !== null
+  );
+}

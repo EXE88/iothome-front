@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { usePreload } from "@/lib/usePreload";
 import { LANDING_SEQUENCES, frameWidth } from "@/lib/useFrameSequence";
-import { warmFrameCache } from "@/lib/frameCache";
+import { frameCacheActive, warmFrameCache } from "@/lib/frameCache";
 import { numberLocale } from "@/lib/format";
 import type { Dictionary, Locale } from "@/lib/i18n";
 
@@ -98,6 +98,12 @@ export default function Preloader({
     // script can skip the splash before the first paint. Keyed to the
     // revision, so a deploy that changes any frame brings the splash back for
     // exactly as long as the new frames take.
+    //
+    // Only when a worker is actually holding those frames. Without one — plain
+    // http, or development — the next load has nothing to skip *to*, and the
+    // marker would buy a missing splash at the price of downloading everything
+    // again in silence.
+    if (!frameCacheActive()) return;
     try {
       window.localStorage.setItem("sl_frames_ready", revision);
     } catch {
@@ -218,7 +224,7 @@ export default function Preloader({
                     ? undefined
                     : {
                         transition:
-                          "stroke-dashoffset 400ms cubic-bezier(0.16, 1, 0.3, 1)",
+                          "stroke-dashoffset 160ms cubic-bezier(0.16, 1, 0.3, 1)",
                       }
                 }
               />

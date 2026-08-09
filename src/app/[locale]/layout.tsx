@@ -106,6 +106,12 @@ export default async function LocaleLayout({
       lang={typed}
       dir={direction[typed]}
       className={`${latin.variable} ${persian.variable} antialiased`}
+      // PreloadGate stamps `data-preload` on this element before React
+      // hydrates — that is the entire point of it, since the decision has to
+      // beat the first paint. React then finds an attribute it did not render
+      // and reports a hydration mismatch. The attribute is expected and
+      // deliberate, so the warning is the wrong signal, not the write.
+      suppressHydrationWarning
     >
       <body>
         {/* First thing in the document: it hides the landing splash before the
