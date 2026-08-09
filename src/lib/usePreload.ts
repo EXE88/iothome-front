@@ -58,12 +58,22 @@ export function usePreload(
   const [arrived, setArrived] = useState(0);
   const [done, setDone] = useState(false);
   const [started, setStarted] = useState(false);
-  const once = useRef(false);
 
   useEffect(() => {
-    if (once.current || sequences.length === 0) return;
-    once.current = true;
+    if (sequences.length === 0) return;
 
+    // No "have I already run?" ref here, and that is deliberate.
+    //
+    // There used to be one, and under StrictMode — which `next dev` turns on —
+    // it deadlocked the whole preloader: the first run set the flag and kicked
+    // off the work, the cleanup cancelled it, and the second run saw the flag
+    // and did nothing at all. The frames were never requested and the
+    // percentage sat at zero forever, while the splash's own canvas quietly
+    // loaded the hero sequence and made it look like something was happening.
+    //
+    // Cancellation is what the cleanup is for. Letting the effect re-run
+    // normally is correct in both modes; the browser coalesces the duplicate
+    // image requests.
     let cancelled = false;
     const width = frameWidth();
     const images: HTMLImageElement[] = [];

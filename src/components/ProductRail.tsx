@@ -43,8 +43,6 @@ export default function ProductRail({
     rail.scrollBy({ left: distance * step * (rtl ? -1 : 1), behavior: "smooth" });
   };
 
-  if (products.length === 0) return null;
-
   return (
     <section
       id="products"
@@ -81,6 +79,7 @@ export default function ProductRail({
             </Link>
             <button
               type="button"
+              hidden={products.length === 0}
               onClick={() => nudge(-1)}
               className="hidden h-11 w-11 items-center justify-center rounded-full border border-[var(--line-strong)] text-ink transition-colors duration-200 hover:bg-[color-mix(in_srgb,var(--ink)_8%,transparent)] sm:flex"
               aria-label={dict.products.prev}
@@ -89,6 +88,7 @@ export default function ProductRail({
             </button>
             <button
               type="button"
+              hidden={products.length === 0}
               onClick={() => nudge(1)}
               className="hidden h-11 w-11 items-center justify-center rounded-full border border-[var(--line-strong)] text-ink transition-colors duration-200 hover:bg-[color-mix(in_srgb,var(--ink)_8%,transparent)] sm:flex"
               aria-label={dict.products.next}
@@ -99,6 +99,22 @@ export default function ProductRail({
         </Reveal>
       </div>
 
+      {/* An empty catalogue used to return null here, which deleted the whole
+          section and left a gap in the page with nothing to explain it — the
+          backend being unreachable looked identical to a layout bug. The
+          section now keeps its place and its route; only the cards are
+          missing, which is the honest description of what happened. */}
+      {products.length === 0 ? (
+        <div className="mx-auto mt-12 max-w-6xl px-6 sm:px-10">
+          <Link
+            href={`/${locale}/shop`}
+            className="inline-flex items-center gap-2 rounded-full border border-[var(--line-strong)] px-6 py-3 text-[0.92rem] font-medium text-ink transition-colors duration-200 hover:bg-[color-mix(in_srgb,var(--ink)_8%,transparent)]"
+          >
+            {dict.nav.shop}
+            <i className="bi bi-arrow-right rtl:rotate-180" aria-hidden="true" />
+          </Link>
+        </div>
+      ) : (
       <div
         ref={railRef}
         className="rail mt-14 flex snap-x snap-mandatory gap-5 overflow-x-auto scroll-smooth px-6 pb-4 sm:px-10"
@@ -170,10 +186,13 @@ export default function ProductRail({
 
         <div className="w-2 shrink-0 sm:w-6" />
       </div>
+      )}
 
-      <p className="mx-auto mt-2 max-w-6xl px-6 text-[0.85rem] text-ink-faint sm:hidden sm:px-10">
-        {dict.products.hint}
-      </p>
+      {products.length > 0 && (
+        <p className="mx-auto mt-2 max-w-6xl px-6 text-[0.85rem] text-ink-faint sm:hidden sm:px-10">
+          {dict.products.hint}
+        </p>
+      )}
     </section>
   );
 }

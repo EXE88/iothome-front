@@ -240,3 +240,65 @@ nav[data-on-dark] a[data-cta]:hover {
 html[data-preload="skip"] .preload-gate {
   display: none;
 }
+
+/* ---------------------------------------------------------------------------
+   Preloader ground
+
+   Not the hero's first frame. The splash sits on the studio sweep — surface
+   two of the system's two — with a pair of very low-contrast blooms drifting
+   across it, sampled from the same studio tokens so no third tone enters.
+
+   The drift is what earns the glass above it. `backdrop-filter` is only
+   allowed in this system where something genuinely moves behind it, and here
+   something does; a glass panel over a still ground would be decoration.
+
+   Both layers are large and soft rather than blurred bitmaps: a `filter:
+   blur()` over a full viewport is a per-frame cost for the whole wait, and a
+   wide radial gradient is already the shape a blur would produce.
+--------------------------------------------------------------------------- */
+@keyframes preload-drift-a {
+  0%,
+  100% {
+    transform: translate3d(-6%, -4%, 0) scale(1.05);
+  }
+  50% {
+    transform: translate3d(5%, 3%, 0) scale(1.18);
+  }
+}
+
+@keyframes preload-drift-b {
+  0%,
+  100% {
+    transform: translate3d(6%, 5%, 0) scale(1.12);
+  }
+  50% {
+    transform: translate3d(-4%, -3%, 0) scale(1);
+  }
+}
+
+.preload-bloom-a,
+.preload-bloom-b {
+  position: absolute;
+  inset: -25%;
+  will-change: transform;
+}
+
+.preload-bloom-a {
+  background: radial-gradient(
+    42% 42% at 38% 34%,
+    color-mix(in srgb, #ffffff 62%, transparent) 0%,
+    color-mix(in srgb, #ffffff 22%, transparent) 45%,
+    transparent 72%
+  );
+  animation: preload-drift-a 26s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+
+.preload-bloom-b {
+  background: radial-gradient(
+    46% 46% at 66% 68%,
+    color-mix(in srgb, var(--studio-edge) 70%, transparent) 0%,
+    color-mix(in srgb, var(--studio-edge) 26%, transparent) 48%,
+    transparent 74%
+  );
+  animation: preload-drift-b 34s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}

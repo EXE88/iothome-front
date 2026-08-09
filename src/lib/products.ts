@@ -75,15 +75,42 @@ export function imageFor(product: Product, width: 640 | 1280 = 640) {
  * A dead backend returns an empty list rather than throwing — the shop then
  * renders its empty state instead of the whole route 500ing.
  */
+/**
+ * Next signals "this route cannot be static" by throwing through `fetch`.
+ *
+ * Swallowing that in a `catch` is not a harmless tidy-up: it tells Next the
+ * fetch succeeded and returned nothing, so the route can be prerendered — and
+ * a landing page built while the backend happens to be down then ships with an
+ * empty catalogue baked into it, permanently, until the next build. Which is
+ * exactly what an empty product rail on a freshly deployed server looks like.
+ */
+function rethrowIfControlFlow(error: unknown) {
+  const digest = (error as { digest?: unknown })?.digest;
+  if (typeof digest === "string" && digest.startsWith("DYNAMIC_SERVER_USAGE")) {
+    throw error;
+  }
+  if (typeof digest === "string" && digest === "NEXT_NOT_FOUND") throw error;
+}
+
 export async function fetchProducts(): Promise<Product[] | null> {
+  const url = `${API_BASE_SERVER}/api/purchases/products/`;
   try {
-    const response = await fetch(`${API_BASE_SERVER}/api/purchases/products/`, {
-      cache: "no-store",
-    });
-    if (!response.ok) return null;
+    const response = await fetch(url, { cache: "no-store" });
+    if (!response.ok) {
+      // Silence here once cost a whole section of the landing page: the rail
+      // rendered nothing and there was no way to tell whether that was a
+      // layout bug or an unreachable backend.
+      console.warn(`catalogue: ${url} answered ${response.status}`);
+      return null;
+    }
     const data = await response.json();
     return (data.results ?? data) as Product[];
-  } catch {
+  } catch (error) {
+    rethrowIfControlFlow(error);
+    console.warn(
+      `catalogue: ${url} is unreachable —`,
+      error instanceof Error ? error.message : error,
+    );
     return null;
   }
 }
@@ -104,7 +131,8 @@ export async function fetchGadgetType(slug: string) {
     const data = await response.json();
     const list: GadgetType[] = data.results ?? data;
     return list.find((type) => type.slug === slug) ?? null;
-  } catch {
+  } catch (error) {
+    rethrowIfControlFlow(error);
     return null;
   }
 }
@@ -117,7 +145,8 @@ export async function fetchProduct(slug: string): Promise<Product | null> {
     );
     if (!response.ok) return null;
     return (await response.json()) as Product;
-  } catch {
+  } catch (error) {
+    rethrowIfControlFlow(error);
     return null;
   }
 }

@@ -2,11 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { usePreload } from "@/lib/usePreload";
-import {
-  LANDING_SEQUENCES,
-  frameWidth,
-  useFrameSequence,
-} from "@/lib/useFrameSequence";
+import { LANDING_SEQUENCES, frameWidth } from "@/lib/useFrameSequence";
 import { warmFrameCache } from "@/lib/frameCache";
 import { numberLocale } from "@/lib/format";
 import type { Dictionary, Locale } from "@/lib/i18n";
@@ -23,22 +19,14 @@ const RING_C = 2 * Math.PI * RING_R;
 /**
  * The wait, made part of the page rather than an apology for it.
  *
- * This is not a spinner over a blank screen. It is the exploded house — frame
- * 080, the first frame the sequence requests and the exact frame the hero
- * opens on — painted by the hero's own painter, on the hero's own ground, at
- * the hero's own zoom and anchor. The wordmark sits where the nav will be and
- * the ring sits where the scroll cue will be. When this dissolves, those two
- * pieces of chrome land in the places the splash was already using and the
- * picture underneath does not move at all: the visitor is looking at the same
- * frame before and after, and the only thing that changed is that it became
- * scrubbable.
+ * The landing page scrubs four eighty-frame sequences, and a visitor who
+ * starts scrolling before they have decoded watches the page's whole argument
+ * stutter. So the page waits, and says how long it will be.
  *
- * Using the canvas painter rather than an `<img>` is not a detail. `contain`
- * on a 16:9 frame in a tall viewport leaves bands top and bottom, and the CSS
- * sweep behind them never matches the frame's own backdrop — it reads as two
- * horizon lines across the screen, which is the one thing this design system
- * says most loudly not to do. The painter continues the frame's own edge
- * pixels outward instead, so there is no seam to match.
+ * The ground is the studio sweep — surface two of the system's two — with a
+ * pair of very low-contrast blooms drifting across it. That drift is not
+ * decoration: it is what earns the glass panel above it, since this system
+ * only permits `backdrop-filter` where something genuinely moves behind.
  *
  * **It is server-rendered, and that is the point.** As a client component that
  * appeared on mount it was always one paint too late: the browser drew the
@@ -65,57 +53,23 @@ export default function Preloader({
 }) {
   const { progress, done } = usePreload(LANDING_SEQUENCES);
 
-  // Starts shown: this markup is in the server's HTML and is already on
-  // screen before any of this code runs. The only question left is when to
-  // take it away.
+  // Starts shown: this markup is in the server's HTML and is already on screen
+  // before any of this code runs. The only question left is when to remove it.
   const [leaving, setLeaving] = useState(false);
   const [gone, setGone] = useState(false);
   const [impatient, setImpatient] = useState(false);
   const [reduced, setReduced] = useState(false);
-  const [narrow, setNarrow] = useState(false);
   const shownAt = useRef<number>(
     typeof performance === "undefined" ? 0 : performance.now(),
   );
 
-  // The same parameters the hero passes, so the frame is painted identically
-  // and the handover is invisible.
-  const { canvasRef, draw } = useFrameSequence({
-    sequence: "house",
-    zoom: narrow ? 1.02 : 1.06,
-    zoomTo: narrow ? 2.1 : 1.34,
-    anchorY: narrow ? 0.74 : 0.5,
-  });
-
   useEffect(() => {
-    const wide = window.matchMedia("(max-width: 639px)");
-    const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const sync = () => setNarrow(wide.matches);
-    sync();
-    setReduced(motion.matches);
-    wide.addEventListener("change", sync);
-    return () => wide.removeEventListener("change", sync);
+    setReduced(window.matchMedia("(prefers-reduced-motion: reduce)").matches);
   }, []);
 
-  // Reduced motion gets the finished house, because that is the frame the hero
-  // paints for them too. Showing the exploded one would promise an assembly
-  // they are never going to see.
-  useEffect(() => {
-    draw(reduced ? 1 : 0);
-  }, [draw, reduced, narrow]);
-
-  /**
-   * Decide once, on evidence, whether this visit deserves a splash.
-   *
-   * A return visit answers hundreds of frames out of the cache — no network at
-   * all, but several hundred milliseconds of decoding, which is long enough
-   * for a naive timer to fire and flash a grey screen at somebody who was
-   * promised the opposite. So the guard does not ask "is it done yet"; it asks
-   * how far it got. Most of the way in 400ms can only be a cache, and that
-   * visitor is shown nothing.
-   */
   /**
    * The pre-paint script already decided this visit needs no splash, so take
-   * it away without a fade — it was hidden by CSS before anything was drawn
+   * it away without a fade — it was hidden by CSS before anything was drawn,
    * and fading it now would only make it briefly visible.
    */
   useEffect(() => {
@@ -195,33 +149,27 @@ export default function Preloader({
     <div
       // Above the nav's z-50. Fixed, so it covers the hero's whole scroll
       // distance rather than only its first screen.
-      className={`preload-gate studio fixed inset-0 z-[100] overflow-hidden transition-opacity ease-[cubic-bezier(0.16,1,0.3,1)] ${
+      className={`preload-gate studio fixed inset-0 z-[100] flex items-center justify-center overflow-hidden px-6 transition-opacity ease-[cubic-bezier(0.16,1,0.3,1)] ${
         reduced ? "duration-0" : "duration-700"
       } ${leaving ? "opacity-0" : "opacity-100"}`}
       // Deliberately not a live region. The percentage changes many times a
       // second, and a polite live region wrapping it would queue an
-      // announcement for every one of them. The ring below is a progressbar
-      // instead, which is the role screen readers already know how to report
-      // on demand rather than continuously.
+      // announcement for every one of them. The ring is a progressbar instead,
+      // which is the role screen readers already know how to report on demand
+      // rather than continuously.
       aria-busy={!done}
     >
-      {/* The hero's frame, painted by the hero's painter. Full-bleed at every
-          size: the paint step continues the frame's own backdrop into whatever
-          the 16:9 image does not cover, so there is no seam to hide. */}
-      <canvas
-        ref={canvasRef}
-        className="absolute inset-0 h-full w-full"
-        aria-hidden="true"
-      />
+      {/* Two very low-contrast blooms drifting across the studio sweep. They
+          are the ground, and they are what earns the glass below. */}
+      <div className="absolute inset-0 overflow-hidden" aria-hidden="true">
+        <div className="preload-bloom-a" />
+        <div className="preload-bloom-b" />
+      </div>
 
-      {/* The wordmark takes the nav's seat exactly — same inset, same content
-          column, same leading-edge alignment, same size and tracking — so the
-          crossfade is one wordmark staying put while the bar materialises
-          around it. Centring it instead put two wordmarks side by side for the
-          length of the fade, which is the sort of thing that only shows up in
-          a screenshot taken mid-transition. */}
-      <div className="pointer-events-none absolute inset-x-0 top-0 px-4 pt-4 sm:px-6 sm:pt-5">
-        <div className="mx-auto flex max-w-6xl items-center px-5 py-2.5 sm:px-6">
+      <div className="relative flex flex-col items-center">
+        {/* The card treatment, unchanged from the product rail: glass at 62%
+            white, a light edge rather than a dark one, and the card lift. */}
+        <div className="flex flex-col items-center rounded-3xl border border-[var(--glass-line)] bg-[var(--glass)] px-10 py-9 shadow-[0_1px_2px_rgba(10,10,10,0.05),0_24px_48px_-24px_rgba(10,10,10,0.35)] backdrop-blur-xl backdrop-saturate-150 sm:px-14 sm:py-11">
           <p className="flex items-center gap-2.5 text-[1.05rem] font-semibold tracking-[-0.02em] text-ink">
             <i
               className="bi bi-house-door-fill text-[1.05rem]"
@@ -229,77 +177,73 @@ export default function Preloader({
             />
             {dict.brand}
           </p>
-        </div>
-      </div>
 
-      {/* And the ring takes the scroll cue's seat. */}
-      <div
-        className={`absolute inset-x-0 bottom-0 flex flex-col items-center px-6 pb-12 transition-opacity duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] sm:pb-14 ${
-          leaving ? "opacity-0" : "opacity-100"
-        }`}
-      >
-        <div
-          className="relative h-28 w-28"
-          role="progressbar"
-          aria-valuemin={0}
-          aria-valuemax={100}
-          aria-valuenow={pct}
-          aria-label={dict.loading.label}
-        >
-          <svg
-            viewBox="0 0 80 80"
-            className="h-full w-full -rotate-90"
-            aria-hidden="true"
+          <div
+            className="relative mt-8 h-28 w-28"
+            role="progressbar"
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-valuenow={pct}
+            aria-label={dict.loading.label}
           >
-            {/* One hairline weight, twice: the strong hairline for the track,
-                full ink for the arc. No second stroke width anywhere. */}
-            <circle
-              cx="40"
-              cy="40"
-              r={RING_R}
-              fill="none"
-              stroke="var(--line-strong)"
-              strokeWidth="1"
-              vectorEffect="non-scaling-stroke"
-            />
-            <circle
-              cx="40"
-              cy="40"
-              r={RING_R}
-              fill="none"
-              stroke="var(--ink)"
-              strokeWidth="1"
-              strokeLinecap="round"
-              vectorEffect="non-scaling-stroke"
-              strokeDasharray={RING_C}
-              strokeDashoffset={RING_C * (1 - progress)}
-              style={
-                reduced
-                  ? undefined
-                  : {
-                      transition:
-                        "stroke-dashoffset 400ms cubic-bezier(0.16, 1, 0.3, 1)",
-                    }
-              }
-            />
-          </svg>
+            <svg
+              viewBox="0 0 80 80"
+              className="h-full w-full -rotate-90"
+              aria-hidden="true"
+            >
+              {/* One hairline weight, twice: the strong hairline for the track,
+                  full ink for the arc. No second stroke width anywhere. */}
+              <circle
+                cx="40"
+                cy="40"
+                r={RING_R}
+                fill="none"
+                stroke="var(--line-strong)"
+                strokeWidth="1"
+                vectorEffect="non-scaling-stroke"
+              />
+              <circle
+                cx="40"
+                cy="40"
+                r={RING_R}
+                fill="none"
+                stroke="var(--ink)"
+                strokeWidth="1"
+                strokeLinecap="round"
+                vectorEffect="non-scaling-stroke"
+                strokeDasharray={RING_C}
+                strokeDashoffset={RING_C * (1 - progress)}
+                style={
+                  reduced
+                    ? undefined
+                    : {
+                        transition:
+                          "stroke-dashoffset 400ms cubic-bezier(0.16, 1, 0.3, 1)",
+                      }
+                }
+              />
+            </svg>
 
-          {/* Title size, not UI size: this number is the one thing the splash
-              is actually for, and at 0.92rem inside a 7rem ring it read as a
-              caption on an empty circle. */}
-          <span
-            className="absolute inset-0 flex items-center justify-center text-[1.25rem] font-semibold tabular-nums tracking-[-0.02em] text-ink"
-            aria-hidden="true"
-          >
-            {percent}
-          </span>
+            {/* Title size, not UI size: this number is the one thing the splash
+                is actually for, and at 0.92rem inside a 7rem ring it read as a
+                caption on an empty circle. */}
+            <span
+              className="absolute inset-0 flex items-center justify-center text-[1.25rem] font-semibold tabular-nums tracking-[-0.02em] text-ink"
+              aria-hidden="true"
+            >
+              {percent}
+            </span>
+          </div>
+
+          <p className="mt-6 text-[0.92rem] text-ink-soft">
+            {dict.loading.label}
+          </p>
         </div>
 
-        <p className="mt-4 text-[0.92rem] text-ink-soft">{dict.loading.label}</p>
-
-        {/* Only after the wait has stopped feeling like a wait. A permanent
-            skip would invite exactly the half-loaded experience this exists to
-            prevent; one that appears at eight seconds is an apology. */}
+        {/* Outside the panel and only after the wait has stopped feeling like
+            a wait. A permanent skip would invite exactly the half-loaded
+            experience this exists to prevent; one that appears at eight
+            seconds is an apology. */}
         <button
           type="button"
           onClick={leave}

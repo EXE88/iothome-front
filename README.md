@@ -245,6 +245,7 @@ succeed with the network blocked.
 | `npm run manifest` | Rebuild `public/asset-manifest.json`. Runs as part of `build`; only needed on its own after editing `public/seq` by hand |
 | `npm run cache:test` | Prove the frame cache: cold download, warm visit with zero network, one edited frame refetched alone, a removed frame evicted. Needs the app on 3001 (`npx next start -p 3001`) — it runs a counting proxy on 3000 |
 | `npm run paint:test` | Prove the landing splash owns the first paint on a cold visit, and never appears on a warm one |
+| `npm run progress:test` | Prove the preloader actually preloads. **Run against `npm run dev`** — StrictMode's double-invoke is the failure mode it guards, and a production build cannot show it |
 
 ---
 

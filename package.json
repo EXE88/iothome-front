@@ -15,7 +15,8 @@
     "e2e:insecure": "node scripts/panel-insecure-e2e.mjs",
     "manifest": "node scripts/build-asset-manifest.mjs",
     "cache:test": "node scripts/frame-cache-test.mjs",
-    "paint:test": "node scripts/first-paint-test.mjs"
+    "paint:test": "node scripts/first-paint-test.mjs",
+    "progress:test": "node --experimental-strip-types scripts/preload-progress-test.mjs"
   },
   "dependencies": {
     "bootstrap-icons": "^1.13.1",
